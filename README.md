@@ -240,15 +240,17 @@ As entidades usam UUID como chave primária e têm índices estratégicos nos ca
 
 📹 **Vídeo demonstrativo**
 
-<!-- [Inserir link do vídeo aqui] -->
+
+https://github.com/user-attachments/assets/870726de-74fd-4951-ab6d-7154d2bbfe99
 
 📱 **Screenshots do bot do Telegram**
 
-<!-- [Inserir capturas do fluxo wizard e do parser aqui] -->
 
-🖥️ **Screenshots das respostas da API**
+<img width="500" height="700" alt="apresentacao_1" src="https://github.com/user-attachments/assets/d18215f4-ce29-46ca-a840-726d0349f811" />
+<img width="500" height="700" alt="apresentacao_2" src="https://github.com/user-attachments/assets/5995da3f-e1d1-45ff-9cba-31a2e613a581" />
 
-<!-- [Inserir exemplos de chamadas no Insomnia/Postman aqui] -->
+<img width="500" height="700" alt="apresentacao_3" src="https://github.com/user-attachments/assets/0eb681f2-67dd-4255-a8f0-3e678e78c7b8" />
+<img width="500" height="700" alt="apresentacao_4" src="https://github.com/user-attachments/assets/cd54f485-09c8-43ef-a2d1-86cd19625680" />
 
 ---
 
