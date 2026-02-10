@@ -45,6 +45,8 @@ Além disso, precisava de isolamento de dados entre usuários, auditoria de tudo
 
 ## Arquitetura
 
+Para mais detalhes sobre a arquitetura, consulte [ARQUITETURA.md](ARQUITETURA.md).
+
 ```
 ┌───────────────────────────────────────────┐
 │         Clientes (HTTP / Telegram)        │
