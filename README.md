@@ -236,8 +236,6 @@ As entidades usam UUID como chave primária e têm índices estratégicos nos ca
 
 ## Demo
 
-> **Em construção.** Abaixo ficam os placeholders para material visual:
-
 📹 **Vídeo demonstrativo**
 
 
