@@ -1,6 +1,6 @@
 # CashFlow — Case Study
 
-Aplicação backend para controle de fluxo de caixa, com API REST e bot do Telegram integrado. O sistema permite registrar receitas e despesas, categorizá-las, gerar relatórios financeiros e acompanhar tudo pelo celular, direto pelo chat do Telegram. Suporta múltiplos usuários com autenticação, auditoria completa de operações e rastreamento de requisições ponta a ponta.
+Aplicação para controle de fluxo de caixa, com API REST, bot do Telegram integrado e aplicação web (CashFlow Web). O sistema permite registrar receitas e despesas, categorizá-las, gerar relatórios financeiros e acompanhar tudo pelo celular, direto pelo chat do Telegram. Suporta múltiplos usuários com autenticação, auditoria completa de operações e rastreamento de requisições ponta a ponta.
 
 ---
 
@@ -18,6 +18,7 @@ Além disso, precisava de isolamento de dados entre usuários, auditoria de tudo
 
 - **API REST completa** com autenticação JWT, gestão de transações, categorias e relatórios financeiros
 - **Bot do Telegram** com fluxo wizard — guia o usuário passo a passo pra registrar transações de forma rápida e estruturada
+- **Aplicação web (CashFlow Web)**: dashboard com gráficos, CRUD de transações (com filtros/paginação/parcelamentos), gestão de categorias, relatórios com gráficos interativos, perfil e responsividade.
 - **Relatórios**: saldo atual, resumo diário/mensal, consulta por intervalo de datas e resumo geral
 - **Auditoria assíncrona**: toda operação de escrita (criar, atualizar, deletar) é registrada com estado antes/depois, campos alterados, IP, user-agent e correlation ID — processada via fila pra não impactar a latência
 - **Multi-tenant por usuário**: cada usuário só vê e manipula seus próprios dados
@@ -43,13 +44,35 @@ Além disso, precisava de isolamento de dados entre usuários, auditoria de tudo
 
 ---
 
+### Frontend (Web)
+
+| Camada              | Tecnologia                              |
+| ------------------- | --------------------------------------- |
+| Framework           | Next.js 16 (App Router)                 |
+| UI                  | React 19                                |
+| Linguagem           | TypeScript 5                            |
+| Componentes         | Shadcn/UI + Radix UI                    |
+| Estilização         | Tailwind CSS 4                          |
+| Estado do Servidor  | TanStack Query v5                       |
+| Estado Global       | Zustand                                 |
+| Formulários         | React Hook Form + Zod                   |
+| HTTP Client         | Axios (interceptors para auth)          |
+| Gráficos            | Recharts                                |
+| Ícones              | Lucide React                            |
+| Testes Unitários    | Vitest + Testing Library                |
+| Testes E2E          | Playwright                              |
+| Mock de API         | MSW (Mock Service Worker)               |
+| Qualidade de Código | ESLint + Prettier + Husky + lint-staged |
+
+---
+
 ## Arquitetura
 
 Para mais detalhes sobre a arquitetura, consulte [ARQUITETURA.md](ARQUITETURA.md).
 
 ```
 ┌───────────────────────────────────────────┐
-│         Clientes (HTTP / Telegram)        │
+│      Clientes (HTTP / Telegram / Web)     │
 └─────────────────────┬─────────────────────┘
                       │
         ┌─────────────┴─────────────┐
@@ -77,6 +100,30 @@ Para mais detalhes sobre a arquitetura, consulte [ARQUITETURA.md](ARQUITETURA.md
   │ PostgreSQL│
   └───────────┘
 ```
+**CashFlow Web (Next.js)** consome a API via HTTP e compartilha o mesmo fluxo de autenticação (JWT). O frontend também envia `x-correlation-id` para rastreamento ponta a ponta.
+
+### Web (CashFlow Web)
+
+### Autenticação
+
+O token JWT é armazenado em cookie (`cashflow_access_token`) e localStorage. O middleware do Next.js redireciona:
+
+- Usuários **não autenticados** em rotas protegidas → `/login`
+- Usuários **autenticados** em rotas públicas → `/dashboard`
+
+### Camada de Dados
+
+- **Axios** com interceptors para injetar `Authorization` header e `x-correlation-id`
+- **TanStack Query** para cache, revalidação automática e sincronização do estado do servidor (`staleTime: 30s`, `refetchOnWindowFocus`)
+- **Zustand** para estado global leve (auth, preferências de UI)
+
+### Formulários e Validação
+
+- **React Hook Form** para performance e controle de formulários
+- **Zod** com schemas espelhando as validações `class-validator` do backend
+
+---
+
 
 O sistema é organizado em módulos NestJS independentes: Auth, Users, Transactions, Categories, Reports, Telegram, Audit e Database. Cada módulo encapsula controller, service e DTOs.
 
@@ -117,6 +164,12 @@ O módulo de relatórios agrega dados de transações e retorna:
 Todos os relatórios são filtrados pelo usuário autenticado — não há como acessar dados de outro usuário.
 
 ---
+### 4. Uso via aplicação web (CashFlow Web)
+
+1. Usuário faz login/registro e recebe o JWT
+2. Middleware do Next.js protege rotas e redireciona conforme autenticação
+3. A aplicação consulta dashboard/transações/relatórios consumindo a API
+4. Operações de escrita (CRUD) seguem o mesmo fluxo do backend e disparam auditoria assíncrona
 
 ## API
 
@@ -238,23 +291,12 @@ As entidades usam UUID como chave primária e têm índices estratégicos nos ca
 
 📹 **Vídeo demonstrativo**
 
-
-https://github.com/user-attachments/assets/870726de-74fd-4951-ab6d-7154d2bbfe99
-
-📱 **Screenshots do bot do Telegram**
-
-
-<img width="500" height="700" alt="apresentacao_1" src="https://github.com/user-attachments/assets/d18215f4-ce29-46ca-a840-726d0349f811" />
-<img width="500" height="700" alt="apresentacao_2" src="https://github.com/user-attachments/assets/5995da3f-e1d1-45ff-9cba-31a2e613a581" />
-
-<img width="500" height="700" alt="apresentacao_3" src="https://github.com/user-attachments/assets/0eb681f2-67dd-4255-a8f0-3e678e78c7b8" />
-<img width="500" height="700" alt="apresentacao_4" src="https://github.com/user-attachments/assets/cd54f485-09c8-43ef-a2d1-86cd19625680" />
+https://github.com/user-attachments/assets/01faa57e-b623-4566-b3d9-8164458fd670
 
 ---
 
 ## Próximos passos
 
-- Dashboard web para visualização de gráficos e relatórios
 - Exportação de relatórios em PDF/CSV
 - Transações recorrentes (agendamento automático)
 - Notificações no Telegram (alertas de saldo baixo, resumo semanal)
